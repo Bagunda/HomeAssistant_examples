@@ -1,0 +1,424 @@
+utility_total:
+
+    homeassistant:
+      customize:
+        binary_sensor.night:
+          friendly_name: Ночной тариф
+        binary_sensor.t1:
+          friendly_name: Тариф T1
+        binary_sensor.t2:
+          friendly_name: Тариф T2
+        binary_sensor.t3:
+          friendly_name: Тариф T3
+        sensor.month:
+          friendly_name: Текущий месяц
+          icon: mdi:calendar-month
+        select.counter_energy:
+          friendly_name: Текущий тариф
+        select.meter_total_energy:
+          friendly_name: Текущий тариф
+
+        sensor.total_energy:
+          friendly_name: Общее потребление
+          device_class: energy
+          unit_of_measurement: кВт/ч
+        sensor.total_power:
+          friendly_name: Общая мощность
+          device_class: power
+          unit_of_measurement: Вт
+
+        sensor.counter_energy_clear:
+          friendly_name: Суммарно по всем тарифам
+          icon: mdi:counter
+          unit_of_measurement: кВт/ч
+        sensor.counter_energy_t1:
+          friendly_name: Счётчик тарифа Т1
+          icon: mdi:numeric-1-circle-outline
+          unit_of_measurement: кВт/ч
+        sensor.counter_energy_t2:
+          friendly_name: Счётчик тарифа Т2
+          icon: mdi:numeric-2-circle-outline
+          unit_of_measurement: кВт/ч
+        sensor.counter_energy_t3:
+          friendly_name: Счётчик тарифа Т3
+          icon: mdi:numeric-3-circle-outline
+          unit_of_measurement: кВт/ч
+
+        sensor.meter_total_energy_clear:
+          friendly_name: Всего
+          icon: mdi:transmission-tower
+          unit_of_measurement: кВт/ч
+        sensor.meter_total_energy_t1:
+          friendly_name: Счётчик квтч тарифа T1 месячный
+          icon: mdi:numeric-1-circle-outline
+          unit_of_measurement: кВт/ч
+        sensor.meter_total_energy_t2:
+          friendly_name: Счётчик квтч тарифа T2 месячный
+          icon: mdi:numeric-2-circle-outline
+          unit_of_measurement: кВт/ч
+        sensor.meter_total_energy_t3:
+          friendly_name: Счётчик квтч тарифа T3 месячный
+          icon: mdi:numeric-3-circle-outline
+          unit_of_measurement: кВт/ч
+
+        sensor.total_energy_clear_cost:
+          friendly_name: Всего
+          icon: mdi:cash-multiple
+          unit_of_measurement: ₽
+        sensor.total_energy_t1_cost:
+          friendly_name: Счётчик ₽ тарифа T1 месячный
+          icon: mdi:cash-fast
+          unit_of_measurement: ₽
+        sensor.total_energy_t2_cost:
+          friendly_name: Счётчик ₽ тарифа T2 месячный
+          icon: mdi:cash-fast
+          unit_of_measurement: ₽
+        sensor.total_energy_t3_cost:
+          friendly_name: Счётчик ₽ тарифа T3 месячный
+          icon: mdi:cash-fast
+          unit_of_measurement: ₽
+
+    recorder:
+      include:
+        entities:
+           - sensor.total_power
+
+    utility_meter:
+
+      counter_energy:
+        source: sensor.total_energy
+        tariffs:
+          - t1
+          - t2
+          - t3
+
+      meter_total_energy:
+        source: sensor.total_energy
+        cycle: monthly
+        offset:
+          days: 0
+          hours: 12
+          minutes: 0
+        tariffs:
+          - t1
+          - t2
+          - t3
+
+    input_number:
+
+      energy_for:
+        name: Значение мощности с виртуального счётчика
+        initial: 0
+        min: 0
+        max: 65000
+        step: 1
+      coast_t1:
+        name: Стоимость тарифа t1 ₽ за КВт/ч
+        mode: box
+        min: 0
+        max: 20
+        step: 0.01
+      coast_t2:
+        name: Стоимость тарифа t2 ₽ за КВт/ч
+        mode: box
+        min: 0
+        max: 20
+        step: 0.01
+      coast_t3:
+        name: Стоимость тарифа t3 ₽ за КВт/ч
+        mode: box
+        min: 0
+        max: 20
+        step: 0.01
+
+    input_text:
+      # coast_t1:
+      #   name: Стоимость тарифа t1 ₽ за КВт/ч
+      # coast_t2:
+      #   name: Стоимость тарифа t2 ₽ за КВт/ч
+      # coast_t3:
+      #   name: Стоимость тарифа t3 ₽ за КВт/ч
+
+      counter_energy_t1:
+        name: Счетчик t1
+      counter_energy_t2:
+        name: Счетчик t2
+      counter_energy_t3:
+        name: Счетчик t3
+
+      total_t1:
+        name: Общее потребление t1
+      total_t2:
+        name: Общее потребление t2
+      total_t3:
+        name: Общее потребление t3
+
+    input_button:
+      counter_energy_t1:
+        name: Счетчик t1
+        icon: mdi:numeric-1-circle-outline
+      counter_energy_t2:
+        name: Счетчик t2
+        icon: mdi:numeric-2-circle-outline
+      counter_energy_t3:
+        name: Счетчик t3
+        icon: mdi:numeric-3-circle-outline
+        
+      total_t1:
+        name: Общее потребление t1
+        icon: mdi:numeric-1-circle-outline
+      total_t2:
+        name: Общее потребление t2
+        icon: mdi:numeric-2-circle-outline
+      total_t3:
+        name: Общее потребление t3
+        icon: mdi:numeric-3-circle-outline
+      send_stat:
+        name: Отправка в телеграмм
+
+    input_boolean:
+    
+      calibrate_switch:
+        name: Калибровка
+
+      tariff_switch:
+        name: Тарифы
+        
+      time_switch:
+        name: Время
+        
+      cost_switch:
+        name: Стоимость
+
+    template:
+            
+      - sensor:
+
+          - name: month
+            state: >
+                {% set month_num = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"] %}
+                {% set month_of_year = month_num[now().month-1]  %}
+                {{ month_of_year }}
+
+          - name: total_energy
+            state: >
+                {{ (states('sensor.energy')|float(0))|round(2) }}
+                  
+          - name: total_power
+            state: >
+                {{ (states('sensor.energy')|float(0))|round(2) }}
+
+          - name: counter_energy_clear
+            state: >
+                {{(
+                   states('sensor.counter_energy_t1')|float(0) +
+                   states('sensor.counter_energy_t2')|float(0) +
+                   states('sensor.counter_energy_t3')|float(0)
+                  )|round(2)}}
+                  
+          - name: meter_total_energy_clear
+            state: >
+                {{(
+                   states('sensor.meter_total_energy_t1')|float(0) +
+                   states('sensor.meter_total_energy_t2')|float(0) +
+                   states('sensor.meter_total_energy_t3')|float(0)
+                  )|round(2)}}
+      
+          - name: total_energy_clear_cost
+            state: >
+                {{(
+                   states('sensor.total_energy_t1_cost')|float(0) +
+                   states('sensor.total_energy_t2_cost')|float(0) +
+                   states('sensor.total_energy_t3_cost')|float(0)
+                  )|round(2)}}
+
+          - name: total_energy_t1_cost
+            state: >
+                {{ states('sensor.meter_total_energy_t1')|float * states('input_number.coast_t1')|float }}
+                
+          - name: total_energy_t2_cost
+            state: >
+                {{ states('sensor.meter_total_energy_t2')|float * states('input_number.coast_t2')|float }}
+                
+          - name: total_energy_t3_cost
+            state: >
+                {{ states('sensor.meter_total_energy_t3')|float * states('input_number.coast_t3')|float }}
+
+          - name: energy
+            unit_of_measurement: 'kWh'
+            state: "{{ states.input_number.energy_for.state }}"
+
+
+    automation:
+    
+      - alias: counter_energy_calibrate
+        id: counter_energy_calibrate
+        description: Калибровка показаний счетчика
+        initial_state: true
+        trigger:
+    ## Потребление t1
+        - platform: state
+          entity_id: input_button.counter_energy_t1
+          id: counter_t1
+    ## Потребление t2
+        - platform: state
+          entity_id: input_button.counter_energy_t2
+          id: counter_t2
+    ## Потребление t3
+        - platform: state
+          entity_id: input_button.counter_energy_t3
+          id: counter_t3
+        action:
+            - choose:
+              - conditions:
+                  - condition: trigger
+                    id: counter_t1
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('input_text.counter_energy_t1')|float}}
+                    target:
+                      entity_id:
+                        - sensor.counter_energy_t1
+              - conditions:
+                  - condition: trigger
+                    id: counter_t2
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('input_text.counter_energy_t2')|float}}
+                    target:
+                      entity_id:
+                        - sensor.counter_energy_t2
+              - conditions:
+                  - condition: trigger
+                    id: counter_t3
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('input_text.counter_energy_t3')|float}}
+                    target:
+                      entity_id:
+                        - sensor.counter_energy_t3
+    
+      - alias: total_energy_calibrate
+        id: total_energy_calibrate
+        description: Калибровка общего потребления
+        initial_state: true
+        trigger:
+    ## Потребление t1
+        - platform: state
+          entity_id: input_button.total_t1
+          id: total_t1
+    ## Потребление t2
+        - platform: state
+          entity_id: input_button.total_t2
+          id: total_t2
+    ## Потребление t3
+        - platform: state
+          entity_id: input_button.total_t3
+          id: total_t3
+        action:
+            - choose:
+              - conditions:
+                  - condition: trigger
+                    id: total_t1
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('input_text.total_t1')|float}}
+                    target:
+                      entity_id:
+                        - sensor.meter_total_energy_t1
+              - conditions:
+                  - condition: trigger
+                    id: total_t2
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('input_text.total_t2')|float}}
+                    target:
+                      entity_id:
+                        - sensor.meter_total_energy_t2
+              - conditions:
+                  - condition: trigger
+                    id: total_t3
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('input_text.total_t3')|float}}
+                    target:
+                      entity_id:
+                        - sensor.meter_total_energy_t3
+
+      - alias: tariff_switching
+        id: tariff_switching
+        description: Переключение между тарифами
+        initial_state: true
+        trigger:
+            - platform: time
+              at: "23:00:00"
+              variables:
+                tariff: "t2"
+            - platform: time
+              at: "07:00:00"
+              variables:
+                tariff: "t1"
+            - platform: time
+              at: "10:00:00"
+              variables:
+                tariff: "t3"
+            - platform: time
+              at: "17:00:00"
+              variables:
+                tariff: "t1"
+            - platform: time
+              at: "21:00:00"
+              variables:
+                tariff: "t3"
+        action:
+          - service: select.select_option
+            target:
+              entity_id:
+                - select.counter_energy
+                # - select.meter_total_energy
+            data:
+              option: "{{ tariff }}"
+
+
+      - alias: monthly_counter_must_be_equal_total_counter
+        id: monthly_counter_must_be_equal_total_counter
+        description: Тарифная зона месячного счётчика должна быть равно тарифной зоне общего счётчика всегда
+        initial_state: true
+        trigger:
+          - platform: state
+            entity_id:
+              - select.counter_energy
+        action:
+          - service: select.select_option
+            data:
+              option: >
+                {{ states.select.counter_energy.state }}
+            target:
+              entity_id: select.meter_total_energy
+
+      - alias: Счётчик электроэнергии. Прибавляем каждую секунду 1кВт для демо режима
+        id: electrocounter_every_seconds_plus_one_kilowatt_for_demo
+        description: Счётчик электроэнергии. Прибавляем каждую секунду 1кВт для демо режима
+        initial_state: true
+        trigger:
+          - platform: time_pattern
+            seconds: "*"
+        action:
+          - service: input_number.increment
+            data: {}
+            target:
+              entity_id: input_number.energy_for
+
+
