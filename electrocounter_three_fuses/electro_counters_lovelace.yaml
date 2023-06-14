@@ -1,0 +1,524 @@
+title: Счётчики электроэнергии
+views:
+  - title: Электро
+    # Unique path for direct access /lovelace/${path}
+    path: electro
+    cards:
+
+      - type: vertical-stack
+        cards:
+
+          - type: custom:stack-in-card
+            mode: vertical
+            cards:
+
+              - type: markdown
+                content: >
+                  **Учет потребления энергии**
+
+              - type: custom:mushroom-template-card
+                entity: sensor.month
+                icon: mdi:calendar-month-outline
+                icon_color: indigo
+                primary: |-
+                          {{states ('sensor.month')}}  
+                secondary: Текущий месяц
+                tap_action:
+                  action: none
+
+              - type: horizontal-stack
+                cards:
+
+                  - type: custom:mushroom-template-card
+                    primary: |-
+                          {{states ('sensor.time')}} 
+                    secondary: Время
+                    layout: horizontal
+                    entity: sensor.time
+                    icon_color: indigo
+                    icon: mdi:clock-time-four
+                    tap_action:
+                      action: none
+
+                  - type: custom:mushroom-template-card
+                    primary: Текущий тариф
+                    secondary: исходя из времени
+                    layout: horizontal
+                    entity: select.counter_energy
+                    icon_color: |-
+                      {% if states.select.counter_energy.state == "t1" %}
+                        red
+                      {% elif states.select.counter_energy.state == "t2" %}
+                        green
+                      {% elif states.select.counter_energy.state == "t3" %}
+                        orange
+                      {% endif %}
+                    icon: |-
+                      {% if states.select.counter_energy.state == "t1" %}
+                        mdi:numeric-1-circle-outline
+                      {% elif states.select.counter_energy.state == "t2" %}
+                        mdi:numeric-2-circle-outline
+                      {% elif states.select.counter_energy.state == "t3" %}
+                        mdi:numeric-3-circle-outline
+                      {% endif %}
+                    tap_action:
+                      action: more-info
+
+  ################# Электросчетчик #################
+
+          - type: custom:stack-in-card
+            mode: vertical
+            cards:
+              - type: markdown
+                content: >
+                  **Электросчетчик**
+
+              - type: horizontal-stack
+                cards:
+
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.counter_energy_clear')}} КВт ч
+                  secondary: Общее
+                  layout: vertical
+                  entity: sensor.counter_energy_clear
+                  tap_action:
+                    action: more-info
+
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.counter_energy_t1')}} КВт ч
+                  secondary: T1 пик
+                  layout: vertical
+                  entity: sensor.counter_energy_t1
+                  tap_action:
+                    action: more-info
+
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.counter_energy_t2')}} КВт ч
+                  secondary: T2 ночь
+                  layout: vertical
+                  entity: sensor.counter_energy_t2
+                  tap_action:
+                    action: more-info
+
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.counter_energy_t3')}} КВт ч
+                  secondary: T3 полупик
+                  layout: vertical
+                  entity: sensor.counter_energy_t3
+                  tap_action:
+                    action: more-info
+
+
+              - type: horizontal-stack
+                cards:
+
+                - type: conditional
+                  conditions:
+                    - entity: input_boolean.calibrate_switch
+                      state: "on"
+                  card:
+
+                    type: custom:stack-in-card
+                    mode: vertical
+                    cards:
+                          
+                      - type: markdown
+                        content: >
+                          **Калибровка этих данных в соответствии с реальным счётчиком**
+
+                      - type: horizontal-stack
+                        cards:
+                          - type: horizontal-stack
+                            cards:
+
+                              - type: entities
+                                show_header_toggle: false
+                                entities:
+                                  - entity: input_text.counter_energy_t1
+                                    name: Тариф t1
+
+                              - type: button
+                                name: установить
+                                entity: input_button.counter_energy_t1
+                                show_icon: false
+                                tap_action:
+                                  action: call-service
+                                  service: input_button.press
+                                  target:
+                                    entity_id: input_button.counter_energy_t1
+
+
+                      - type: horizontal-stack
+                        cards:
+                          - type: horizontal-stack
+                            cards:
+
+                              - type: entities
+                                show_header_toggle: false
+                                entities:
+                                  - entity: input_text.counter_energy_t2
+                                    name: Тариф t2
+
+                              - type: button
+                                name: установить
+                                entity: input_button.counter_energy_t2
+                                show_icon: false
+                                tap_action:
+                                  action: call-service
+                                  service: input_button.press
+                                  target:
+                                    entity_id: input_button.counter_energy_t2
+                                  
+
+                      - type: horizontal-stack
+                        cards:
+                          - type: horizontal-stack
+                            cards:
+
+                              - type: entities
+                                show_header_toggle: false
+                                entities:
+                                  - entity: input_text.counter_energy_t3
+                                    name: Тариф t3
+
+                              - type: button
+                                name: установить
+                                entity: input_button.counter_energy_t3
+                                show_icon: false
+                                tap_action:
+                                  action: call-service
+                                  service: input_button.press
+                                  target:
+                                    entity_id: input_button.counter_energy_t3
+
+
+
+
+
+  ################# Общее потребление за месяц #################
+
+          - type: custom:stack-in-card
+            mode: vertical
+            cards:
+
+              - type: custom:mushroom-template-card
+                primary: Общее потребление, месяц
+                layout: horizontal
+                icon_color: indigo
+                icon: mdi:home-lightning-bolt
+                tap_action:
+                  action: none
+
+              - type: horizontal-stack
+                cards:
+
+                - type: custom:mushroom-template-card
+                  primary: Сумма
+                  secondary: всех тарифов
+                  layout: vertical
+                  tap_action:
+                    action: none
+
+                - type: custom:mushroom-template-card
+                  primary: T1
+                  secondary: тариф
+                  layout: vertical
+                  tap_action:
+                    action: none
+
+                - type: custom:mushroom-template-card
+                  primary: Т2
+                  secondary: тариф
+                  layout: vertical
+                  tap_action:
+                    action: none
+
+                - type: custom:mushroom-template-card
+                  primary: Т3
+                  secondary: тариф
+                  layout: vertical
+                  tap_action:
+                    action: none
+                    
+
+              - type: horizontal-stack
+                cards:
+
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.meter_total_energy_clear')}} КВт ч
+                  secondary: |-
+                        {{states ('sensor.total_energy_clear_cost')}} ₽
+                  layout: vertical
+                  entity: sensor.meter_total_energy_clear
+                  tap_action:
+                    action: more-info
+                    
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.meter_total_energy_t1')}} КВт ч
+                  secondary: |-
+                        {{states ('sensor.total_energy_t1_cost')}} ₽
+                  layout: vertical
+                  entity: sensor.meter_total_energy_t1
+                  tap_action:
+                    action: more-info
+                    
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.meter_total_energy_t2')}} КВт ч
+                  secondary: |-
+                        {{states ('sensor.total_energy_t2_cost')}} ₽
+                  layout: vertical
+                  entity: sensor.meter_total_energy_t2
+                  tap_action:
+                    action: more-info
+                    
+                - type: custom:mushroom-template-card
+                  primary: |-
+                        {{states ('sensor.meter_total_energy_t3')}} КВт ч
+                  secondary: |-
+                        {{states ('sensor.total_energy_t3_cost')}} ₽
+                  layout: vertical
+                  entity: sensor.meter_total_energy_t3
+                  tap_action:
+                    action: more-info
+
+
+              - type: horizontal-stack
+                cards:
+
+                - type: conditional
+                  conditions:
+                    - entity: input_boolean.calibrate_switch
+                      state: "on"
+                  card:
+
+                    type: custom:stack-in-card
+                    mode: vertical
+                    cards:
+                          
+                      - type: markdown
+                        content: >
+                          **Калибровка общего (виртуального) счётчика**
+
+                      - type: horizontal-stack
+                        cards:
+                          - type: horizontal-stack
+                            cards:
+
+                              - type: entities
+                                show_header_toggle: false
+                                entities:
+                                  - entity: input_text.total_t1
+                                    name: Тариф t1
+
+                              - type: button
+                                name: установить
+                                entity: input_button.total_t1
+                                show_icon: false
+                                tap_action:
+                                  action: call-service
+                                  service: input_button.press
+                                  target:
+                                    entity_id: input_button.total_t1
+
+
+                      - type: horizontal-stack
+                        cards:
+                          - type: horizontal-stack
+                            cards:
+
+                              - type: entities
+                                show_header_toggle: false
+                                entities:
+                                  - entity: input_text.total_t2
+                                    name: Тариф t2
+
+                              - type: button
+                                name: установить
+                                entity: input_button.total_t2
+                                show_icon: false
+                                tap_action:
+                                  action: call-service
+                                  service: input_button.press
+                                  target:
+                                    entity_id: input_button.total_t2
+                                  
+
+                      - type: horizontal-stack
+                        cards:
+                          - type: horizontal-stack
+                            cards:
+
+                              - type: entities
+                                show_header_toggle: false
+                                entities:
+                                  - entity: input_text.total_t3
+                                    name: Тариф t3
+
+                              - type: button
+                                name: установить
+                                entity: input_button.total_t3
+                                show_icon: false
+                                tap_action:
+                                  action: call-service
+                                  service: input_button.press
+                                  target:
+                                    entity_id: input_button.total_t3
+
+
+
+
+
+  ############################ Колонка 3 ############################
+
+      - type: vertical-stack
+        cards:
+
+          - type: custom:stack-in-card
+            mode: vertical
+            cards:
+
+  ################# Переключатели #################
+
+              - type: markdown
+                content: >
+                  **Настройки**
+
+              - type: horizontal-stack
+                cards:
+
+                - type: custom:mushroom-template-card
+                  primary: Калибровка
+                  secondary: |-
+                    {% if is_state("input_boolean.calibrate_switch", "on") %}
+                    Показана
+                    {% else %}
+                    Скрыта
+                    {% endif %}
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: input_boolean.calibrate_switch
+                  icon: |-
+                    {% if is_state("input_boolean.calibrate_switch", "on") %}
+                    mdi:toggle-switch
+                    {% else %}
+                    mdi:toggle-switch-off
+                    {% endif %}
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("input_boolean.calibrate_switch", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+
+                - type: custom:mushroom-template-card
+                  primary: Стоимость
+                  secondary: |-
+                    {% if is_state("input_boolean.cost_switch", "on") %}
+                    Показана
+                    {% else %}
+                    Скрыта
+                    {% endif %}
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: input_boolean.cost_switch
+                  icon: |-
+                    {% if is_state("input_boolean.cost_switch", "on") %}
+                    mdi:toggle-switch-variant
+                    {% else %}
+                    mdi:toggle-switch-variant-off
+                    {% endif %}
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("input_boolean.cost_switch", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+
+                - type: custom:mushroom-template-card
+                  primary: Инфо
+                  secondary: о программе
+                  layout: horizontal
+                  tap_action:
+                    action: navigate
+                    navigation_path: /lovelace-counters/electro-info
+                  icon: 
+                  icon_color: 
+
+
+  ################# Стоимость #################
+
+          - type: conditional
+            conditions:
+              - entity: input_boolean.cost_switch
+                state: "on"
+            card:
+
+                type: custom:stack-in-card
+                mode: vertical
+                cards:
+      
+                  - type: markdown
+                    content: >
+                      **Настройка стоимости**
+
+                  - type: horizontal-stack
+                    cards:
+      
+                      - type: entities
+                        show_header_toggle: false
+                        entities:
+                          - entity: input_number.coast_t1
+                          - entity: input_number.coast_t2
+                          - entity: input_number.coast_t3
+
+
+
+
+
+
+
+
+
+
+
+    # Specify a tab icon if you want the view tab to be an icon.
+  - icon: mdi:home-assistant
+    # Title of the view. Will be used as the tooltip for tab icon
+    title: Описание о данном экране счётчиков электроэнергии
+    path: electro-info
+    subview: true
+    cards:
+      - type: markdown
+        title: Описание
+        content: >
+          Электросчётчик должен показывать те же показания, что и реальный счётчик. Подразумевается, что где-то происходят вычисления и определённому тарифу счётчика посылается команда "прибавь столько-то киловатт". И это прибавляется к определённому тарифу. И автоматически прибавляется в счётчик "Суммарно по всем тарифам".
+
+
+          Второй счётчик считает только по-месячно киловатт-часы по каждому тарифу и суммарное.
+
+
+          Третий счётчик считает только по-месячно рубли по каждому тарифу и суммарное. Но на панели счётчик киловатт-часов и рублей визуально объединены.
+
+
+          При включении переключателя "Калибровка", можно задать значения первого счётчика, чтобы они совпадали с реальным счётчиком. При этом другие счётчики (киловатт-часы и рубли) не изменят своего значения. Но дополнительно выводится панелька для изменения и тех значений тоже.
+
+
+          При включении переключателя "Стоимость", нужно задать стоимость каждого тарифа. Например: [тарифы в Москве для трёхтарифного счётчика](https://www.mosenergosbyt.ru/individuals/tariffs-n-payments/tariffs-msk/polnaya-versiya-tarifov.php). Т1=8,23р, Т2=5,66р, Т3=2,62р на июль 2023. Исходя из этих тарифов иконки подсвечены красным, жёлтым и зелёным соответственно.
+
+
+          При нажатии на текст "Текущий тариф", можно изменить текущий тариф для тестирования.
+
+
+          В программе заданны временные интервалы, когда надо переключить подсчёт на другой тариф.
+
